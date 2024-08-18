@@ -1,0 +1,89 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Vehicle {
+  createdAt      DateTime      @default(now())
+  description    String?
+  id             String        @id @default(cuid())
+  manufacturer   Manufacturer? @relation(fields: [manufacturerId], references: [id])
+  manufacturerId String?
+  model          String?
+  name           String?
+  orders         Order[]
+  price          Float?
+  reviews        Review[]
+  updatedAt      DateTime      @updatedAt
+  year           Int?
+}
+
+model Customer {
+  address     String?
+  createdAt   DateTime @default(now())
+  email       String?
+  firstName   String?
+  id          String   @id @default(cuid())
+  lastName    String?
+  orders      Order[]
+  phoneNumber String?
+  reviews     Review[]
+  updatedAt   DateTime @updatedAt
+}
+
+model Review {
+  comment    String?
+  createdAt  DateTime  @default(now())
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+  id         String    @id @default(cuid())
+  rating     Int?
+  reviewDate DateTime?
+  updatedAt  DateTime  @updatedAt
+  vehicle    Vehicle?  @relation(fields: [vehicleId], references: [id])
+  vehicleId  String?
+}
+
+model Manufacturer {
+  contactEmail    String?
+  country         String?
+  createdAt       DateTime  @default(now())
+  establishedYear Int?
+  id              String    @id @default(cuid())
+  name            String?
+  updatedAt       DateTime  @updatedAt
+  vehicles        Vehicle[]
+}
+
+model Order {
+  createdAt   DateTime         @default(now())
+  customer    Customer?        @relation(fields: [customerId], references: [id])
+  customerId  String?
+  id          String           @id @default(cuid())
+  orderDate   DateTime?
+  status      EnumOrderStatus?
+  totalAmount Float?
+  updatedAt   DateTime         @updatedAt
+  vehicle     Vehicle?         @relation(fields: [vehicleId], references: [id])
+  vehicleId   String?
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumOrderStatus {
+  Option1
+}
